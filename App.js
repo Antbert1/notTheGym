@@ -1,26 +1,29 @@
 import React from 'react';
 import { Provider as StoreProvider } from 'react-redux';
 import store from './src/redux/store';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
+import { createAppContainer, NavigationContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 import Home from './src/components/Home';
+import Auth from './src/components/Auth';
+import Register from './src/components/Register';
+
+const RootStack = createStackNavigator({
+  Auth: { screen: Auth },
+  Home: { screen: Home },
+  Register: { screen: Register }
+});
+
+const Navigation = createAppContainer(RootStack);
 
 const App = () => {
 
   return (
     <StoreProvider store={store}>
-      <View style={styles.container}>
-        <Home />
-      </View>
+      <Navigation />
     </StoreProvider>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
-  },
-});
 
 export default App;

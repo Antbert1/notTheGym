@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import { TouchableWithoutFeedback, Button, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Image, ScrollView, Modal } from 'react-native';
+import { AsyncStorage, Button, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Image, ScrollView, Modal } from 'react-native';
 import { saveClasses, setFilteredList } from '../redux/indexActions';
+import ClassList from './ClassList';
+import ClassType from './ClassType';
 const filter = require('../images/filter.png');
 // import Question from './Question';
 
-const Home = () => {
+const Home = (props) => {
   const dispatch = useDispatch();
   const classesTotal = useSelector(state => state).dataReducer.classes;
   const classes = useSelector(state => state).dataReducer.filteredList;
+  const pageNum = useSelector(state => state).dataReducer.pageNum;
   const [loaded, setLoaded] = useState(false);
   const [filters, setFilters] = useState([]);
   const [filterIndex, setFilterIndex] = useState(0);
@@ -16,7 +19,7 @@ const Home = () => {
   // const [classList, setClassList] = useState([]);
 
   useEffect(() => {
-    fetch('http://192.168.1.128:8000/classdetails')
+    fetch('http://192.168.1.128:8000/notgym/classdetails')
       .then((response) => response.json())
       .then((json) => setData(json));
   }, []);
@@ -49,127 +52,100 @@ const Home = () => {
 
   // }
 
-  function openModal() {
-    setModalVisible(true);
-  }
+  // function openModal() {
+  //   setModalVisible(true);
+  // }
 
-  const ClassList = () => {
-    return classes.map((item, index) => {
-      return (
-        <View key={index}>
-          <Text>{item.name}</Text>
-        </View>
-      );
-    });
-  };
+  // const ClassList = () => {
+  //   return classes.map((item, index) => {
+  //     return (
+  //       <View key={index}>
+  //         <Text>{item.name}</Text>
+  //       </View>
+  //     );
+  //   });
+  // };
 
-  function filterItems(item, index) {
-    // let filteredClasses = classesTotal;
-    // if (item !== 'All') {
-    //   filteredClasses = classesTotal.filter(function (el) {
-    //     return el.type === item;
-    //   });
+  // function filterItems(item, index) {
 
-    // }
+  //   setFilterIndex(index);
+  // }
 
-    // dispatch(setFilteredList(filteredClasses));
-    setFilterIndex(index);
-  }
+  // const FilterList = () => {
+  //   return filters.map((item, index) => {
+  //     return (
+  //       <TouchableOpacity onPress={() => filterItems(item, index)} key={index}>
+  //         {filterIndex === index ?
+  //           <View style={styles.selectedItem}>
+  //             <Text style={styles.selectedText}>{item}</Text>
+  //           </View>
+  //           :
+  //           <View>
+  //             <Text>{item}</Text>
+  //           </View>
+  //         }
 
-  const FilterList = () => {
-    return filters.map((item, index) => {
-      return (
-        <TouchableOpacity onPress={() => filterItems(item, index)} key={index}>
-          {filterIndex === index ?
-            <View style={styles.selectedItem}>
-              <Text style={styles.selectedText}>{item}</Text>
-            </View>
-            :
-            <View>
-              <Text>{item}</Text>
-            </View>
-          }
+  //       </TouchableOpacity>
+  //     );
+  //   });
+  // };
 
-        </TouchableOpacity>
-      );
-    });
-  };
+  // function applyFilter() {
+  //   let filteredClasses = classesTotal;
+  //   if (filterIndex !== 0) {
+  //     filteredClasses = classesTotal.filter(function (el) {
+  //       return el.type === filters[filterIndex];
+  //     });
+  //   }
+  //   dispatch(setFilteredList(filteredClasses));
+  //   setModalVisible(!modalVisible);
+  // }
 
-  function applyFilter() {
-    let filteredClasses = classesTotal;
-    if (filterIndex !== 0) {
-      filteredClasses = classesTotal.filter(function (el) {
-        return el.type === filters[filterIndex];
-      });
+  const showPage = () => {
+    if (pageNum === 0) {
+      return <ClassList />;
+    } else {
+      return <ClassType />;
     }
-    dispatch(setFilteredList(filteredClasses));
-    setModalVisible(!modalVisible);
   }
 
-  const Filter = () => {
-    return (
-      <Modal
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <TouchableWithoutFeedback
-          activeOpacity={1}
-          onPressOut={() => { setModalVisible(false) }}
-        >
-          <View style={styles.modalView}>
-            <TouchableWithoutFeedback
-              activeOpacity={1}
-              onPressOut={() => { }}
-            >
-              <View style={styles.modalInner}>
-                <Text>Filter</Text>
-                <FilterList />
-                <TouchableOpacity onPress={() => applyFilter()} >
-                  <View style={styles.button}>
-                    <Text>Apply Filter</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </TouchableWithoutFeedback >
-          </View>
-        </TouchableWithoutFeedback >
-
-      </Modal>
-    )
+  async function logout() {
+    try {
+      await AsyncStorage.removeItem('Token');
+      props.navigation.navigate('Auth');
+      return true;
+    }
+    catch (exception) {
+      return false;
+    }
   }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Filter />
+
       <View style={styles.headingDiv}>
         <Text style={styles.heading}>Not The Gym</Text>
-        <View style={styles.filterDiv}>
-          <TouchableOpacity onPress={() => openModal()} >
-            <Image source={filter} style={styles.filter} />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={() => logout()}>
+          <Text>Log Out</Text>
+        </TouchableOpacity>
       </View>
 
       {!loaded ?
         <ActivityIndicator size="small" color="#0000ff" />
         :
-        <View style={styles.content}>
-          <ClassList />
-        </View>
+        showPage()
       }
-      <View style={styles.buttonContainer}>
-        {/* <Button title="Save asdf" onPress={() => save()} /> */}
-      </View>
+
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    // margin: 20,
+    // flex: 1,
+    backgroundColor: '#F0F0F0',
+    height: '100%'
   },
   buttonContainer: {
     marginBottom: 20,
@@ -181,7 +157,8 @@ const styles = StyleSheet.create({
   headingDiv: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // backgroundColor: 'red',
+    backgroundColor: '#02DB9A',
+    padding: 20
     // width: '100%'
   },
   modalView: {
@@ -201,6 +178,11 @@ const styles = StyleSheet.create({
   selectedText: {
     color: 'white',
   },
+  heading: {
+    fontFamily: 'Montserrat-Bold',
+    color: 'white',
+    fontSize: 25
+  }
 });
 
 export default Home;
