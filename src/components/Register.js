@@ -7,11 +7,10 @@ import Home from './Home';
 const Register = (props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [is_teacher, setIsTeacher] = useState(false);
+    const [is_teacher, setIsTeacher] = useState(props.navigation.state.params.userType ? true : false);
     const [first_name, setFirstName] = useState('');
     const [last_name, setLastName] = useState('');
     const [postcode, setPostcode] = useState('');
-    const [name, setName] = useState('');
 
 
     function register() {
@@ -20,7 +19,7 @@ const Register = (props) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, password, is_teacher, first_name, last_name, postcode, name })
+            body: JSON.stringify({ email, password, is_teacher, first_name, last_name, postcode })
         })
             .then(res => res.json())
             .then(res => {
@@ -45,7 +44,7 @@ const Register = (props) => {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.header}>Register</Text>
-            <Text>Username</Text>
+            <Text>Email Address</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -80,13 +79,6 @@ const Register = (props) => {
                 placeholder="Postcode"
                 onChangeText={text => setPostcode(text)}
                 value={postcode}
-            />
-            <Text>Name</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Name"
-                onChangeText={text => setName(text)}
-                value={name}
             />
             <View style={styles.buttonDiv}>
                 <TouchableOpacity onPress={() => register()} >

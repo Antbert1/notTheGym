@@ -1,10 +1,11 @@
 import { combineReducers } from 'redux';
-import { SAVE_CLASSES, FILTERED_LIST, PAGE_NUM, SELECTED_CLASS } from './indexActions';
+import { SAVE_CLASSES, FILTERED_LIST, PAGE_NUM, SELECTED_CLASS, EMAIL } from './indexActions';
 const dataState = {
     classes: [],
     filteredList: [],
     pageNum: 0,
     selectedClass: {},
+    email: '',
 };
 
 const dataReducer = (state = dataState, action) => {
@@ -20,6 +21,9 @@ const dataReducer = (state = dataState, action) => {
             return state;
         case SELECTED_CLASS:
             state = Object.assign({}, state, { selectedClass: action.selectedClass });
+            return state;
+        case EMAIL:
+            state = Object.assign({}, state, { email: action.email });
             return state;
         default:
             return state;

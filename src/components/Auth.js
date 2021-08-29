@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, AsyncStorage } from 'react-native';
-import { saveClasses, setFilteredList } from '../redux/indexActions';
+import { setEmail } from '../redux/indexActions';
 import Home from './Home';
 
 const Auth = (props) => {
+    const dispatch = useDispatch();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     function register() {
-        props.navigation.navigate('Register');
+        props.navigation.navigate('RegisterType');
     }
 
     function validate() {
+        //Save username in Redux
+        dispatch(setEmail(username));
         fetch(`http://192.168.1.128:8000/auth/`, {
             method: 'POST',
             headers: {
@@ -30,6 +33,7 @@ const Auth = (props) => {
 
     const saveData = async (token) => {
         await AsyncStorage.setItem('Token', token);
+        await AsyncStorage.setItem('Email', username);
     };
 
     const getData = async () => {
@@ -67,7 +71,7 @@ const Auth = (props) => {
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => validate()} >
                     <View style={styles.bookBtn}>
-                        <Text style={styles.btnText}>Validate</Text>
+                        <Text style={styles.btnText}>Log In</Text>
                     </View>
                 </TouchableOpacity>
             </View>

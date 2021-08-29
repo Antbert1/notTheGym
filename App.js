@@ -7,10 +7,12 @@ import { createStackNavigator } from 'react-navigation-stack';
 import Home from './src/components/Home';
 import Auth from './src/components/Auth';
 import Register from './src/components/Register';
+import RegisterType from './src/components/RegisterType';
 
 const RootStack = createStackNavigator({
   Auth: { screen: Auth },
   Home: { screen: Home },
+  RegisterType: { screen: RegisterType },
   Register: { screen: Register }
 });
 

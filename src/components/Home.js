@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { AsyncStorage, Button, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Image, ScrollView, Modal } from 'react-native';
-import { saveClasses, setFilteredList } from '../redux/indexActions';
+import { saveClasses, setFilteredList, setEmail } from '../redux/indexActions';
 import ClassList from './ClassList';
 import ClassType from './ClassType';
 const filter = require('../images/filter.png');
@@ -16,13 +16,26 @@ const Home = (props) => {
   const [filters, setFilters] = useState([]);
   const [filterIndex, setFilterIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  // const [classList, setClassList] = useState([]);
+  const [isTeacher, setIsTeacher] = useState(false);
 
   useEffect(() => {
+    getData();
     fetch('http://192.168.1.128:8000/notgym/classdetails')
       .then((response) => response.json())
       .then((json) => setData(json));
   }, []);
+
+  const getData = async () => {
+    const email = await AsyncStorage.getItem('Email', email);
+    dispatch(setEmail(email));
+    fetch('http://192.168.1.128:8000/notgym/users/?email=' + email)
+      .then((response) => response.json())
+      .then((json) => setTeacher(json));
+  };
+
+  function setTeacher(user) {
+    setIsTeacher(user[0].is_teacher);
+  }
 
   function setData(data) {
     dispatch(saveClasses(data));
@@ -112,6 +125,7 @@ const Home = (props) => {
   async function logout() {
     try {
       await AsyncStorage.removeItem('Token');
+      await AsyncStorage.removeItem('Email');
       props.navigation.navigate('Auth');
       return true;
     }
@@ -128,6 +142,9 @@ const Home = (props) => {
         <TouchableOpacity onPress={() => logout()}>
           <Text>Log Out</Text>
         </TouchableOpacity>
+        {isTeacher &&
+          <Text>Teacher Panel</Text>
+        }
       </View>
 
       {!loaded ?
