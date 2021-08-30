@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { SAVE_CLASSES, FILTERED_LIST, PAGE_NUM, SELECTED_CLASS, EMAIL } from './indexActions';
+import { SAVE_CLASSES, FILTERED_LIST, PAGE_NUM, SELECTED_CLASS, EMAIL, PROFILE } from './indexActions';
 const dataState = {
     classes: [],
     filteredList: [],
@@ -24,6 +24,9 @@ const dataReducer = (state = dataState, action) => {
             return state;
         case EMAIL:
             state = Object.assign({}, state, { email: action.email });
+            return state;
+        case PROFILE:
+            state = Object.assign({}, state, { profile: action.profile });
             return state;
         default:
             return state;

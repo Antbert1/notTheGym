@@ -3,6 +3,7 @@ export const FILTERED_LIST = 'FILTERED_LIST';
 export const PAGE_NUM = 'PAGE_NUM';
 export const SELECTED_CLASS = 'SELECTED_CLASS';
 export const EMAIL = 'EMAIL';
+export const PROFILE = 'PROFILE';
 
 export function saveClasses(classes) {
     return {
@@ -38,4 +39,12 @@ export function setEmail(email) {
         email,
     };
 }
+
+export function setProfile(profile) {
+    return {
+        type: PROFILE,
+        profile,
+    };
+}
+
 

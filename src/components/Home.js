@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import { AsyncStorage, Button, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Image, ScrollView, Modal } from 'react-native';
-import { saveClasses, setFilteredList, setEmail } from '../redux/indexActions';
+import { Button, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Image, ScrollView, Modal } from 'react-native';
+import { saveClasses, setFilteredList, setEmail, setProfile } from '../redux/indexActions';
 import ClassList from './ClassList';
 import ClassType from './ClassType';
 const filter = require('../images/filter.png');
+const user = require('../images/user.png');
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // import Question from './Question';
 
 const Home = (props) => {
@@ -12,6 +14,7 @@ const Home = (props) => {
   const classesTotal = useSelector(state => state).dataReducer.classes;
   const classes = useSelector(state => state).dataReducer.filteredList;
   const pageNum = useSelector(state => state).dataReducer.pageNum;
+  const currentUser = useSelector(state => state).dataReducer.profile;
   const [loaded, setLoaded] = useState(false);
   const [filters, setFilters] = useState([]);
   const [filterIndex, setFilterIndex] = useState(0);
@@ -33,8 +36,9 @@ const Home = (props) => {
       .then((json) => setTeacher(json));
   };
 
-  function setTeacher(user) {
-    setIsTeacher(user[0].is_teacher);
+  function setTeacher(currentUser) {
+    dispatch(setProfile(currentUser[0]));
+    setIsTeacher(currentUser[0].is_teacher);
   }
 
   function setData(data) {
@@ -134,6 +138,15 @@ const Home = (props) => {
     }
   }
 
+  function goToProfile() {
+    if (currentUser.is_teacher) {
+      props.navigation.navigate('TeacherProfile');
+    } else {
+      props.navigation.navigate('Profile');
+    }
+
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
 
@@ -142,9 +155,9 @@ const Home = (props) => {
         <TouchableOpacity onPress={() => logout()}>
           <Text>Log Out</Text>
         </TouchableOpacity>
-        {isTeacher &&
-          <Text>Teacher Panel</Text>
-        }
+        <TouchableOpacity onPress={() => goToProfile()}>
+          <Image source={user} style={styles.userImg} />
+        </TouchableOpacity>
       </View>
 
       {!loaded ?
@@ -199,6 +212,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Bold',
     color: 'white',
     fontSize: 25
+  },
+  userImg: {
+    width: 30,
+    height: 35
   }
 });
 

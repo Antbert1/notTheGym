@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, AsyncStorage } from 'react-native';
+import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setEmail } from '../redux/indexActions';
-import Home from './Home';
+
 
 const Auth = (props) => {
     const dispatch = useDispatch();
@@ -26,14 +27,15 @@ const Auth = (props) => {
             .then(res => res.json())
             .then(res => {
                 saveData(res.token);
-                props.navigation.navigate('Home');
             })
             .catch(error => console.log(error));
     }
 
     const saveData = async (token) => {
         await AsyncStorage.setItem('Token', token);
-        await AsyncStorage.setItem('Email', username);
+        AsyncStorage.setItem('Email', username).then(
+            props.navigation.navigate('Home')
+        );
     };
 
     const getData = async () => {
